@@ -1,10 +1,8 @@
 
 
 def parse_input(input_path):
-    lines = []
     with open(input_path) as file_obj:
-        for line in file_obj:
-            lines.append([ord(char) for char in line.strip()])
+        lines = [line.strip() for line in file_obj]
     return lines
 
 
@@ -16,7 +14,7 @@ def day03a(input_path):
         first, second = line[:len(line)//2], line[len(line)//2:]
         common_set = set(first) & set(second)
         assert len(common_set) == 1  # common set should have only one element
-        common = common_set.pop()
+        common = ord(common_set.pop())
         if common < 97:  # A to Z --> 27 to 52
             common -= 38
         else:  # a to z --> 1 to 26
@@ -36,7 +34,7 @@ def day03b(input_path):
     for ind in range(0, len(lines), 3):
         common_set = set(lines[ind]) & set(lines[ind+1]) & set(lines[ind+2])
         assert len(common_set) == 1  # common set should have only one element
-        common = common_set.pop()
+        common = ord(common_set.pop())
         if common < 97:  # A to Z --> 27 to 52
             common -= 38
         else:  # a to z --> 1 to 26
