@@ -28,9 +28,8 @@ def parse_input(input_path):
     return crates, moves, max_col_num
 
 
-def day05a(input_path):
-    """Return the top crate from each column at the end of the move instructions."""
-    crates, moves, max_col_num = parse_input(input_path)
+def move_crates(crates, moves, model=9000):
+    """Apply move instructions to crates for given CrateMover model."""
     for move in moves:
         tokens = move.split()
         if not tokens:
@@ -38,14 +37,26 @@ def day05a(input_path):
         num = int(tokens[1])
         from_col = int(tokens[3])
         to_col = int(tokens[-1])
-        for _ in range(num):
-            crate_to_move = crates[from_col].pop()
-            crates[to_col].append(crate_to_move)
-    result = []
-    for num in range(1, max_col_num + 1):
-        if crates[num]:
-            result.append(crates[num][-1])
-    return ''.join(result)
+        crates_to_move = crates[from_col][-num:]
+        crates[from_col] = crates[from_col][:-num]
+        # only when using the CrateMover9000, crates are reversed when moved
+        if model == 9000:
+            crates_to_move.reverse()
+        elif model != 9001:
+            raise ValueError(f"Unrecognized model '{model}'.")
+        crates[to_col] += crates_to_move
+
+
+def get_top_crates(crates, max_col_num):
+    """Return a string consisting of the top crate from each column."""
+    return ''.join([crates[num][-1] for num in range(1, max_col_num + 1)])
+
+
+def day05a(input_path):
+    """Return the top crates from each column at the end of the move instructions."""
+    crates, moves, max_col_num = parse_input(input_path)
+    move_crates(crates, moves, model=9000)
+    return get_top_crates(crates, max_col_num)
 
 
 def test05a():
@@ -53,21 +64,10 @@ def test05a():
 
 
 def day05b(input_path):
-    """Return the top crate from each column at the end of the move instructions (CrateMover 9001)."""
+    """Return the top crates from each column at the end of the move instructions (CrateMover 9001)."""
     crates, moves, max_col_num = parse_input(input_path)
-    for move in moves[1:]:
-        tokens = move.split()
-        num = int(tokens[1])
-        from_col = int(tokens[3])
-        to_col = int(tokens[-1])
-        crates_to_move = crates[from_col][-num:]
-        crates[from_col] = crates[from_col][:-num]
-        crates[to_col] += crates_to_move
-    result = []
-    for num in range(1, max_col_num + 1):
-        if crates[num]:
-            result.append(crates[num][-1])
-    return ''.join(result)
+    move_crates(crates, moves, model=9001)
+    return get_top_crates(crates, max_col_num)
 
 
 def test05b():
